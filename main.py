@@ -36,6 +36,20 @@ def saveToDB(statusCode):
         print(err)
 
 
+def validateInput(input1, input2):
+    validate = False
+    if type(input1) == int or type(input1) == float:
+        if type(input2) == int or type(input2) == float:
+            validate = True
+        else:
+            validate = False
+            # result = invalidNumber  ## input containt one or more invalid value
+    else:
+        validate = False
+        # result = invalidNumber
+    return validate
+
+
 ## calculator end point get json data from request body
 ## calculate the sum of two numbers from the json and resoonse json with the result
 
@@ -43,25 +57,23 @@ def saveToDB(statusCode):
 
 def calculator():
 
-    try:
-        invalidNumber = {"error": 'not valid number'}
-        request_data = request.get_json() #get json from body
 
-        num1 = request_data['num1'] #first number to calculate
-        num2 = request_data['num2']  # second number to calculate
-        if type(num1) == int or type(num2) == float:
-            if type(num2) == int or type(num2) == float:
-                result = {'sum': num1 + num2} ## input cpntains two valid values
-            else:
-                result = invalidNumber ##input containt one or more invalid value
-        else:
-            result = invalidNumber
+    invalidNumber = {"error": 'not valid number'}
+    request_data = request.get_json() #get json from body
 
-    except Exception as err:
-        print(err)
+    num1 = request_data['num1'] #first number to calculate
+    num2 = request_data['num2']  # second number to calculate
 
+    input = validateInput(num1, num2)
+    if input == True:
+        result = {'sum': num1 + num2}  ## input cpntains two valid values
+    else:
+        return invalidNumber
 
     return result
+
+
+
 
 
 
