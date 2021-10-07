@@ -8,10 +8,17 @@ Flask RestAPI app to sum two numbers and response the result contains two endpoi
 /health -> check the health of the API -> response ok message status code 200 and save the ping time to sqlite DB
 """
 
+"""
+example for json input:
+{
+   "num1": 3,
+   "num2": 43
+}
+"""
+
+
 health_status = True
 app = Flask(__name__)
-
-
 
 
 ## save the ping datetime to local sqlite db with status code
@@ -19,15 +26,14 @@ def saveToDB(statusCode):
     try:
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        with sqlite3.connect("ping.db") as con:
+        with sqlite3.connect("pingDB.db") as con:
             cur = con.cursor()
             print(date)
-            cur.execute("insert into ping values (?,?)", (dt_string, statusCode))
+            cur.execute("insert into pingDB values (?,?)", (dt_string, statusCode))
             con.commit()
 
     except Exception as err:
         print(err)
-
 
 
 ## calculator end point get json data from request body
@@ -40,25 +46,22 @@ def calculator():
     try:
         invalidNumber = {"error": 'not valid number'}
         request_data = request.get_json() #get json from body
-        print(request_data)
 
         num1 = request_data['num1'] #first number to calculate
-        if type(num1) == int or type(num1) == float:
-            num2 = request_data['num2']  # second number to calculate
+        num2 = request_data['num2']  # second number to calculate
+        if type(num1) == int or type(num2) == float:
             if type(num2) == int or type(num2) == float:
-                try:
-                    result = num1 + num2
-                except Exception as err:
-                    print(err)
+                result = {'sum': num1 + num2} ## input cpntains two valid values
             else:
-                result = invalidNumber
+                result = invalidNumber ##input containt one or more invalid value
         else:
             result = invalidNumber
 
     except Exception as err:
         print(err)
 
-    return {"sum": result}
+
+    return result
 
 
 
