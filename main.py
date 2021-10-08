@@ -9,7 +9,7 @@ Flask RestAPI app to sum two numbers and response the result contains two endpoi
 """
 
 """
-example for json input:
+example for input values:
 {
    "num1": 3,
    "num2": 43
@@ -28,7 +28,6 @@ def saveToDB(statusCode):
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
         with sqlite3.connect("pingDB.db") as con:
             cur = con.cursor()
-            print(date)
             cur.execute("insert into pingDB values (?,?)", (dt_string, statusCode))
             con.commit()
 
@@ -43,30 +42,31 @@ def validateInput(input1, input2):
             validate = True
         else:
             validate = False
-            # result = invalidNumber  ## input containt one or more invalid value
     else:
         validate = False
-        # result = invalidNumber
     return validate
 
 
 ## calculator end point get json data from request body
 ## calculate the sum of two numbers from the json and resoonse json with the result
 
-@app.route("/calculator", methods=["GET", "POST"])
+@app.route("/calculator", methods=["POST"])
 
 def calculator():
 
 
-    invalidNumber = {"error": 'not valid number'}
+    invalidNumber = {'result': {'error': 'invalid input'}}
     request_data = request.get_json() #get json from body
 
     num1 = request_data['num1'] #first number to calculate
     num2 = request_data['num2']  # second number to calculate
 
     input = validateInput(num1, num2)
+
     if input == True:
-        result = {'sum': num1 + num2}  ## input cpntains two valid values
+
+        result = {'result': {'sum': num1 + num2}}  ## input cpntains two valid values
+
     else:
         return invalidNumber
 
@@ -75,10 +75,8 @@ def calculator():
 
 
 
-
-
 ## make health check and return json with 'ok response and status code 200'
-@app.route('/health')
+@app.route('/health', methods=["GET"])
 def health():
     if health_status:
         resp = jsonify(health="ok")
